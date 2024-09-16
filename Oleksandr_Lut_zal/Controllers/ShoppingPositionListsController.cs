@@ -90,16 +90,17 @@ namespace Oleksandr_Lut_zal.Controllers
             }
 
             var shoppingPositionList = await _context.ShoppingPositionList.FindAsync(id);
+
+            if (shoppingPositionList == null)
+            {
+                return NotFound();
+            }
+
             var authResult = await _authorizationService.AuthorizeAsync(User, shoppingPositionList, "IsOwner");
 
             if (!authResult.Succeeded)
             {
                 return Forbid();
-            }
-
-            if (shoppingPositionList == null)
-            {
-                return NotFound();
             }
 
             return View(shoppingPositionList);

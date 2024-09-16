@@ -28,7 +28,11 @@ namespace Oleksandr_Lut_zal.Controllers
         // GET: ShopingPositions
         public async Task<IActionResult> Index()
         {
-            var shoppingLists = await _context.ShopingPositions.ToListAsync();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            var shoppingLists = await _context.ShopingPositions.Where(item => item.ownerId == userId).ToListAsync();
             return View(shoppingLists);
         }
 
@@ -53,7 +57,10 @@ namespace Oleksandr_Lut_zal.Controllers
         // GET: ShopingPositions/Create
         public IActionResult Create()
         {
-            var shoppingLists = _context.ShoppingPositionList.ToList();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var shoppingLists = _context.ShoppingPositionList.Where(item => item.ownerId == userId).ToList();
             ViewBag.ShoopingLists = new SelectList(shoppingLists, "id", "listTitle");
             return View();
         }
