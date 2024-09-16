@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Oleksandr_Lut_zal.Auth;
 using Oleksandr_Lut_zal.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,13 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
+    options.AddPolicy("IsOwner", policy =>
+    {
+        policy.Requirements.Add(new IsOwnerRequirement());
+    });
 });
+
+builder.Services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
 
 var app = builder.Build();
 

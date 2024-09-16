@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +15,10 @@ namespace Oleksandr_Lut_zal.Controllers
 {
     public class ShoppingPositionListsController : Controller
     {
+        private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public ShoppingPositionListsController(ApplicationDbContext context)
         {
@@ -22,7 +28,10 @@ namespace Oleksandr_Lut_zal.Controllers
         // GET: ShoppingPositionLists
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ShoppingPositionList.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var shoppingLists = await _context.ShoppingPositionList.Where(item => item.ownerId == userId).ToListAsync();
+            return View(shoppingLists);
         }
 
         // GET: ShoppingPositionLists/Details/5
@@ -46,7 +55,11 @@ namespace Oleksandr_Lut_zal.Controllers
         // GET: ShoppingPositionLists/Create
         public IActionResult Create()
         {
-            return View();
+            var model = new ShoppingPositionList
+            {
+                PlannedDate = DateTime.Now
+            };
+            return View(model);
         }
 
         // POST: ShoppingPositionLists/Create
@@ -56,24 +69,39 @@ namespace Oleksandr_Lut_zal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,listTitle")] ShoppingPositionList shoppingPositionList)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            shoppingPositionList.ownerId = userId;
+
             _context.Add(shoppingPositionList);
             await _context.SaveChangesAsync();
+
             return View(shoppingPositionList);
         }
 
         // GET: ShoppingPositionLists/Edit/5
+        [Authorize(Policy = "IsOwner")]
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
 
             var shoppingPositionList = await _context.ShoppingPositionList.FindAsync(id);
+            var authResult = await _authorizationService.AuthorizeAsync(User, shoppingPositionList, "IsOwner");
+
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             if (shoppingPositionList == null)
             {
                 return NotFound();
             }
+
             return View(shoppingPositionList);
         }
 

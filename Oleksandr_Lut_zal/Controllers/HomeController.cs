@@ -13,9 +13,9 @@ namespace Oleksandr_Lut_zal.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityApplicationUser> userManager)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _context = context;
@@ -25,8 +25,7 @@ namespace Oleksandr_Lut_zal.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-            var shoopingItemWithList = await _context.ShoppingPositionList.Include(item => item.ShopingPosition).ToListAsync();
+            var shoopingItemWithList = await _context.ShoppingPositionList.Include(item => item.ShopingPosition).Where(item => item.ownerId == userId).ToListAsync();
             return View(shoopingItemWithList);
         }
 

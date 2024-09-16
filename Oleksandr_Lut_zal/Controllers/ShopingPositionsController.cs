@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +15,10 @@ namespace Oleksandr_Lut_zal.Controllers
 {
     public class ShopingPositionsController : Controller
     {
+        private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public ShopingPositionsController(ApplicationDbContext context)
         {
@@ -59,10 +65,11 @@ namespace Oleksandr_Lut_zal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,description,isDrawOut,ShoopingListId")] ShopingPosition shopingPosition)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            shopingPosition.ownerId = userId;
 
             _context.Add(shopingPosition);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
             return View(shopingPosition);
         }
 
@@ -94,27 +101,34 @@ namespace Oleksandr_Lut_zal.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var position = await _context.ShopingPositions.FindAsync(id);
+
+            if (position == null)
             {
-                try
-                {
-                    _context.Update(shopingPosition);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ShopingPositionExists(shopingPosition.id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            return View(shopingPosition);
+
+            try
+            {
+                position.description = shopingPosition.description;
+                position.isDrawOut = shopingPosition.isDrawOut;
+
+                _context.Update(position);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ShopingPositionExists(shopingPosition.id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ShopingPositions/Delete/5

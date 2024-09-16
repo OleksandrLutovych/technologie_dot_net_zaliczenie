@@ -1,37 +1,27 @@
 ﻿@model IEnumerable<Oleksandr_Lut_zal.Models.ShoppingPositionList>
 
-<h1>Shopping Lists</h1>
-<a href="/ShopingPositions/Create" class="btn btn-success">Add Shopping Position</a>
+
+<div style="display: flex; justify-content: space-between; margin-bottom: 50px; align-items: center">
+    <h1>Moje listy zakupów</h1>
+    <a href="/ShopingPositions/Create" class="btn btn-success">Dodaj pozycje</a>
+</div>
 
 @foreach (var list in Model)
 {
-    <h2>@list.listTitle</h2>
+    <div style="display: flex; justify-content: space-between; width: 500px;">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => list.ShopingPosition.FirstOrDefault().description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => list.ShopingPosition.FirstOrDefault().isDrawOut)
-                </th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in list.ShopingPosition)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.description)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.isDrawOut)
-                    </td>
+        <h2>@list.listTitle</h2>
+        <p>@list.PlannedDate</p>
+    </div>
 
-                </tr>
-            }
-        </tbody>
-    </table>
+    <ul class="table">
+        @foreach (var item in list.ShopingPosition)
+        {
+            <li>
+                <span style="@(!item.isDrawOut ? "" : "text-decoration: line-through;")">
+                    @Html.DisplayFor(modelItem => item.description)
+                </span>
+            </li>
+        }
+    </ul>
 }

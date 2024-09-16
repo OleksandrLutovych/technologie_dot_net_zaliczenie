@@ -4,21 +4,18 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Pozycje zakupowe</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Utwórz pozycję</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.description)
+                Nazwa
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.isDrawOut)
-            </th>
-            <th></th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -26,15 +23,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.description)
+                    <span style="@(!item.isDrawOut ? "" : "text-decoration: line-through;")">
+                        @Html.DisplayFor(modelItem => item.description)
+                    </span>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.isDrawOut)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.id">Edytuj</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Podgląd</a> |
+                    <a asp-action="Delete" asp-route-id="@item.id">Usuń</a>
                 </td>
             </tr>
         }

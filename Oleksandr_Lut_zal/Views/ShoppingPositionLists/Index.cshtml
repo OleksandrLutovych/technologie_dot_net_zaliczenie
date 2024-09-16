@@ -4,18 +4,20 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Moje listy zakupów</h1>
-
-<p>
+<div style="display: flex; justify-content: space-between; margin-bottom: 50px; align-items: center">
+    <h1>Moje listy zakupów</h1>
     <a asp-action="Create">Utwórz nową listę</a>
-</p>
+</div>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.listTitle)
+                Nazwa listy
             </th>
-            <th></th>
+            <th>
+                Akcje
+            </th>
         </tr>
     </thead>
     <tbody>
