@@ -1,0 +1,46 @@
+﻿@model Oleksandr_Lut_zal.Models.ShopingPosition
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Tworzenie</h1>
+
+<h4>Produkty do kupienia</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="description" class="control-label">Opis produktu</label>
+                <input asp-for="description" class="form-control" />
+                <span asp-validation-for="description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShoopingListId" class="control-label">Lista do której chcesz dodać produkt</label>
+                <select asp-for="ShoopingListId" class="form-control" asp-items="ViewBag.ShoopingLists"></select>
+                <span asp-validation-for="ShoopingListId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="isDrawOut" /> @Html.DisplayNameFor(model =>
+                    model.isDrawOut)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Dodaj" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Wróć do listy</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
